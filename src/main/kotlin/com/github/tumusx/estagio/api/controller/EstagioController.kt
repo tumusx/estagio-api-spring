@@ -20,8 +20,18 @@ class EstagioController(private val estagioRepository: EstagioRepository) {
         return estagioRepository.findById(id).map { ResponseEntity.ok(it) }.orElse(ResponseEntity.notFound().build())
     }
 
-    @PutMapping("/atualizarEstagio/{id}")
-    fun atualizarEstagio(){
+    @DeleteMapping("/deletarEstagio/{id}")
+    fun deletarEstagio(@PathVariable id: Long) = estagioRepository.deleteById(id)
 
-    }
+    @PutMapping("atualizar/{id}")
+    fun atualizarEstagio(@PathVariable id: Long, @RequestBody estagio: Estagio): ResponseEntity<Estagio> =
+        estagioRepository.findById(id).map { estagio ->
+            val estagiotoUpdate = estagio.copy(
+                cargoEstagio = estagio.cargoEstagio,
+                nomeEstagiario = estagio.nomeEstagiario,
+                empresaEstagio = estagio.empresaEstagio,
+                periodoEstagio = estagio.periodoEstagio
+            )
+            ResponseEntity.ok(estagioRepository.save(estagiotoUpdate))
+        }.orElse(ResponseEntity.notFound().build())
 }
